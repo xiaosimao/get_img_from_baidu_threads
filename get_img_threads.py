@@ -32,12 +32,12 @@ class ImgThread(threading.Thread):
 
 def worker():
     while not queue.empty():
-        url = queue.get()
-        save(url)
+        url_save, save_path = queue.get()
+        save(url, save_path)
         queue.task_done()
 
 
-def save(url_save):
+def save(url_save, save_path):
     global count
 
     target = save_path + '\\%s.jpg' % count
@@ -53,7 +53,6 @@ def save(url_save):
 def get_url(word, num):
     url_list = set()
     for j in range(1, num + 1):
-
         send_data = {
             "queryWord": word,
             "tn": "resultjson_com",
@@ -76,14 +75,13 @@ def get_url(word, num):
     return url_list
 
 
-def get_img(word, page_num, thread_num=30, path=None, delete_file_size=10240):
+def get_img(word, page_num, thread_num=30, path=None, second_path='img', delete_file_size=10240):
     global sums
-    global save_path
 
     if path is None:
-        if not os.path.exists(os.path.join(os.getcwd(), 'img')):
-            os.mkdir(os.path.join(os.getcwd(), 'img'))
-        save_path = os.path.join(os.getcwd(), 'img')
+        if not os.path.exists(os.path.join(os.getcwd(), second_path)):
+            os.mkdir(os.path.join(os.getcwd(), second_path))
+        save_path = os.path.join(os.getcwd(), second_path)
     else:
         if not os.path.exists(path):
             raise ValueError("the directory: %s does not exist, please check again" % path)
@@ -91,7 +89,7 @@ def get_img(word, page_num, thread_num=30, path=None, delete_file_size=10240):
 
     urls = get_url(word, page_num)
     for url in urls:
-        queue.put(url)
+        queue.put((url, save_path))
 
     threads = []
     for i in range(thread_num):
@@ -99,7 +97,6 @@ def get_img(word, page_num, thread_num=30, path=None, delete_file_size=10240):
         t.setDaemon(True)
         t.start()
         threads.append(t)
-
     for thread in threads:
         thread.join()
     queue.join()
@@ -117,4 +114,4 @@ def get_img(word, page_num, thread_num=30, path=None, delete_file_size=10240):
 
 
 if __name__ == '__main__':
-    get_img("外国美女", 2)
+    get_img("办公室", 2)
