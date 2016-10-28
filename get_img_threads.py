@@ -12,10 +12,10 @@ import Queue
 count = 1
 queue = Queue.Queue()
 socket.setdefaulttimeout(10)
-
+user_agent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0"
 header = {
     'Host': "image.baidu.com",
-    'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0",
+    'User-Agent': user_agent,
 }
 
 url = 'https://image.baidu.com/search/acjson'
