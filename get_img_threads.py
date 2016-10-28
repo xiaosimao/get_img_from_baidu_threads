@@ -15,7 +15,7 @@ socket.setdefaulttimeout(10)
 user_agent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0"
 header = {
     'Host': "image.baidu.com",
-    'User-Agent': user_agent,
+    'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0",
 }
 
 url = 'https://image.baidu.com/search/acjson'
@@ -33,7 +33,7 @@ class ImgThread(threading.Thread):
 def worker():
     while not queue.empty():
         url_save, save_path = queue.get()
-        save(url, save_path)
+        save(url_save, save_path)
         queue.task_done()
 
 
@@ -46,8 +46,17 @@ def save(url_save, save_path):
         sums = count
         urllib.urlretrieve(url_save, target)
         count += 1
-    except Exception:
+
+    except Exception, e:
+        print e
         pass
+
+
+def reporthook(blocks_read, block_size, total_size):
+    has_do = blocks_read * block_size / 1024.0
+    to = total_size / 1024.0
+    if (has_do / to) > 1:
+        print 'down c'
 
 
 def get_url(word, num):
@@ -92,6 +101,7 @@ def get_img(word, page_num, thread_num=30, path=None, second_path='img', delete_
         queue.put((url, save_path))
 
     threads = []
+    print "--------start----------"
     for i in range(thread_num):
         t = ImgThread(worker)
         t.setDaemon(True)
@@ -100,7 +110,8 @@ def get_img(word, page_num, thread_num=30, path=None, second_path='img', delete_
     for thread in threads:
         thread.join()
     queue.join()
-
+    print "---------end----------"
+    print "-----now,check bad files-----"
     num = 1
     for n in range(1, int(sums) + 1):
         try:
@@ -109,8 +120,8 @@ def get_img(word, page_num, thread_num=30, path=None, second_path='img', delete_
                 num += 1
         except Exception:
             num += 1
-
-    print 'done %s' % (int(sums) - num + 1)
+    print "-----check done-----"
+    print 'good file num: %s' % (int(sums) - num + 1)
 
 
 if __name__ == '__main__':
