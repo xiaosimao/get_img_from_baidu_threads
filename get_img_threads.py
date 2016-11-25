@@ -8,7 +8,10 @@ from trans import decode
 import socket
 import threading
 import Queue
-
+import sys
+import re
+reload(sys)
+sys.setdefaultencoding('utf-8')
 count = 1
 queue = Queue.Queue()
 socket.setdefaulttimeout(10)
@@ -46,7 +49,6 @@ def save(url_save, save_path):
         sums = count
         urllib.urlretrieve(url_save, target)
         count += 1
-
     except Exception, e:
         print e
         pass
@@ -84,7 +86,7 @@ def get_url(word, num):
     return url_list
 
 
-def get_img(word, page_num, thread_num=30, path=None, second_path='img', delete_file_size=10240):
+def get_img(word, page_num, thread_num=10, path=None, second_path='img', delete_file_size=10240):
     global sums
 
     if path is None:
@@ -125,4 +127,4 @@ def get_img(word, page_num, thread_num=30, path=None, second_path='img', delete_
 
 
 if __name__ == '__main__':
-    get_img("办公室", 2)
+    get_img("上海", 1)
