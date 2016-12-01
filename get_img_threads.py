@@ -75,12 +75,11 @@ def get_url(word, num):
             "pn": 30 * j,
             "rn": 30,
         }
-
+        re_url = re.compile(r'"objURL":"(.*?)"')
         content = requests.get(url, headers=header, params=send_data)
-        data = json.loads(content.content)["data"]
+        data = [decode(x) for x in re_url.findall(content.content)]
         for i in range(len(data) - 1):
-            objurl = data[i]['objURL']
-            imgurl = decode(objurl)
+            imgurl = data[i]
             url_list.add(imgurl)
 
     return url_list
@@ -127,4 +126,4 @@ def get_img(word, page_num, thread_num=10, path=None, second_path='img', delete_
 
 
 if __name__ == '__main__':
-    get_img("上海", 1)
+    get_img("维密", 2)
